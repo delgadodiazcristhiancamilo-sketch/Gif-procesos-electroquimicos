@@ -5,8 +5,10 @@ ANIMACIÓN DIDÁCTICA Y CIENTÍFICA DE CELDA ELECTROQUÍMICA Y DOBLE CAPA ELÉCT
 Este script en Python genera una animación (GIF y MP4) de una celda electroquímica 
 completa a escala macroscópica y microscópica.
 
-Cambio final aplicado:
-- Eliminación del título superior principal "CELDA ELECTROQUÍMICA COMPLETA Y INTERFAZ ELECTRODO–ELECTROLITO".
+Modificaciones aplicadas:
+1. Duración extendida a 20.0 segundos para alargar el tiempo disponible en cada fase.
+2. Transiciones entre fases fuertemente marcadas visualmente con cambios distintivos 
+   de color en el banner de fase y flashes de transición.
 
 Autor: Asistente Antigravity AI (Google DeepMind)
 ===============================================================================
@@ -32,12 +34,12 @@ CONFIG = {
     'N_B': 40,                     # Cantidad inicial de especies B (Red - Azul)
     'N_cationes': 30,              # Cantidad de cationes M+ (Verde)
     'N_aniones': 30,               # Cantidad de aniones X- (Morado)
-    'velocidad_electrones': 0.35,  # Velocidad de e- en el circuito
+    'velocidad_electrones': 0.35,  # Velocidad suave de e- en el circuito
     'velocidad_iones': 0.08,       # Velocidad de migración iónica hacia electrodos
     'coeficiente_difusion': 0.04,  # Intensidad del movimiento browniano / difusión
     'velocidad_reaccion': 0.15,    # Probabilidad de transferencia e- en interfaz
     'potencial_aplicado': 1.23,    # Potencial conceptual aplicado (E_app)
-    'duracion': 13.0,              # Duración total de la animación en segundos
+    'duracion': 20.0,              # Duración total extendida en segundos (Fases alargadas)
     'fps': 20,                     # Cuadros por segundo
     'distancia_electrodos': 7.4    # Distancia en X entre Ánodo (3.3) y Cátodo (10.7)
 }
@@ -106,20 +108,29 @@ class ElectrochemicalCellSimulation:
         return particulas
 
     def obtener_fase_y_tiempo(self, frame):
-        """Retorna el tiempo actual t y la fase de la animación (1 a 6)."""
+        """
+        Retorna el tiempo actual t y la fase de la animación (1 a 6).
+        Tiempos extendidos por fase (Total = 20 s):
+          Fase 1: 0.0 - 3.0 s  (3.0 s) -> Estado Inicial
+          Fase 2: 3.0 - 6.0 s  (3.0 s) -> Aplicación de Potencial ΔE
+          Fase 3: 6.0 - 9.0 s  (3.0 s) -> Doble Capa Eléctrica
+          Fase 4: 9.0 - 13.0 s (4.0 s) -> Transferencia Electrónica Interfacial
+          Fase 5: 13.0 - 17.0 s(4.0 s) -> Gradientes de Concentración y Difusión
+          Fase 6: 17.0 - 20.0 s(3.0 s) -> Estado Estacionario Conceptual
+        """
         t = frame / self.fps
-        if t < 2.0:
-            fase = 1  # Estado Inicial
-        elif t < 3.5:
-            fase = 2  # Aplicación del Potencial
-        elif t < 5.0:
-            fase = 3  # Formación de la Doble Capa
-        elif t < 8.0:
-            fase = 4  # Transferencia Electrónica Interfacial
-        elif t < 11.0:
-            fase = 5  # Gradientes de Concentración y Difusión
+        if t < 3.0:
+            fase = 1
+        elif t < 6.0:
+            fase = 2
+        elif t < 9.0:
+            fase = 3
+        elif t < 13.0:
+            fase = 4
+        elif t < 17.0:
+            fase = 5
         else:
-            fase = 6  # Estado Estacionario Conceptual
+            fase = 6
         return t, fase
 
     def mover_particulas(self, fase):
@@ -242,9 +253,9 @@ class ElectrochemicalCellSimulation:
 
     def dibujar_circuito(self, ax, fase, t, estado_gen):
         """
-        Dibuja el generador y los instrumentos de medición con los electrones en movimiento.
+        Dibuja el generador y los instrumentos de medición con electrones en movimiento.
         """
-        # 1. Generador (Ubicado a Y = 7.75 - 8.55, justo debajo del banner de fase Y = 8.85 - 9.60)
+        # 1. Generador
         color_gen = '#27AE60' if fase >= 2 else '#BDC3C7'
         rect_gen = patches.FancyBboxPatch((5.4, 7.75), 3.2, 0.80,
                                           boxstyle="round,pad=0.08",
@@ -254,7 +265,7 @@ class ElectrochemicalCellSimulation:
         ax.text(7.0, 8.28, "GENERADOR / FUENTE", color='white', weight='bold', fontsize=10, ha='center', va='center', zorder=5)
         ax.text(7.0, 7.98, estado_gen, color='white', weight='bold', fontsize=11, ha='center', va='center', zorder=5)
 
-        # 2. Cables del circuito externo (Conectan top de electrodos Y=5.8 a Y=8.15)
+        # 2. Cables del circuito externo
         path_left = [(2.9, 5.8), (2.9, 8.15), (5.4, 8.15)]
         path_right = [(8.6, 8.15), (11.1, 8.15), (11.1, 5.8)]
         
@@ -263,12 +274,10 @@ class ElectrochemicalCellSimulation:
             ax.plot(xs, ys, color='#2C3E50', linewidth=3.5, zorder=3)
 
         # 3. Instrumentos de Medición (sin agujas/flechas)
-        # Amperímetro (mA) en serie sobre cable izquierdo (Y = 7.15)
         circle_mA = patches.Circle((2.9, 7.15), 0.38, facecolor='white', edgecolor='#2C3E50', linewidth=2.0, zorder=5)
         ax.add_patch(circle_mA)
         ax.text(2.9, 7.15, "mA", fontsize=11, weight='bold', color='#C0392B', ha='center', va='center', zorder=6)
 
-        # Voltímetro (mV) en paralelo entre cables por debajo del generador (Y = 6.60)
         ax.plot([2.9, 11.1], [6.60, 6.60], color='#7F8C8D', linestyle='--', linewidth=1.8, zorder=3)
         circle_mV = patches.Circle((7.0, 6.60), 0.38, facecolor='white', edgecolor='#2C3E50', linewidth=2.0, zorder=5)
         ax.add_patch(circle_mV)
@@ -279,7 +288,6 @@ class ElectrochemicalCellSimulation:
             num_e = 10
             offset = (t * self.cfg['velocidad_electrones'] * 0.18) % 1.0
             
-            # Trayectoria paramétrica (L = 2.35 + 8.2 + 2.35 = 12.9)
             for i in range(num_e):
                 pos = (i / num_e + offset) % 1.0
                 dist = pos * 12.9
@@ -324,33 +332,40 @@ class ElectrochemicalCellSimulation:
         
         fig.patch.set_facecolor('white')
         
-        # 1. RECUADRO DE INFORMACIÓN DE LA FASE (Ubicado en la parte superior: Y = 8.85 a 9.60)
-        textos_fase = {
+        # Configuración visual distintiva por Fase (Colores de Banner marcados para cada Fase)
+        estilos_fase = {
             1: ("FASE 1 — ESTADO INICIAL",
-                "Generador OFF | Distribución homogénea de A (Ox) y B (Red) | Iones M⁺/X⁻ aleatorios | Sin doble capa"),
+                "Generador OFF | Distribución homogénea de A (Ox) y B (Red) | Iones M⁺/X⁻ aleatorios | Sin doble capa",
+                '#EAECEE', '#B2BABB', '#2C3E50'),
             2: ("FASE 2 — APLICACIÓN DE POTENCIAL ΔE",
-                "Generador ON (ΔE aplicado) | Se establece campo eléctrico | Inicio del flujo de electrones e⁻ por circuito externo"),
+                "Generador ON (ΔE aplicado) | Se establece campo eléctrico | Inicio del flujo de electrones e⁻ por circuito externo",
+                '#FEF9E7', '#F1C40F', '#7D6608'),
             3: ("FASE 3 — FORMACIÓN DE LA DOBLE CAPA ELÉCTRICA",
-                "Migración iónica: Aniones X⁻ → Ánodo (+) | Cationes M⁺ → Cátodo (-) | Formación de Doble Capa Eléctrica"),
+                "Migración iónica: Aniones X⁻ → Ánodo (+) | Cationes M⁺ → Cátodo (-) | Formación de Doble Capa Eléctrica",
+                '#EBF5FB', '#3498DB', '#1B4F72'),
             4: ("FASE 4 — TRANSFERENCIA ELECTRÓNICA INTERFACIAL",
-                "Ánodo (Oxidación): B → A + e⁻ | Cátodo (Reducción): A + e⁻ → B | Los e⁻ cruzan únicamente la interfaz electrodo-solución"),
+                "Ánodo (Oxidación): B → A + e⁻ | Cátodo (Reducción): A + e⁻ → B | Los e⁻ cruzan únicamente la interfaz electrodo-solución",
+                '#FDEDEC', '#E74C3C', '#78281F'),
             5: ("FASE 5 — GRADIENTES DE CONCENTRACIÓN Y DIFUSIÓN",
-                "Consumo y generación de especies en la superficie induce gradientes | Difusión desde/hacia el seno de la solución"),
+                "Consumo y generación de especies en la superficie induce gradientes | Difusión desde/hacia el seno de la solución",
+                '#FBF2E9', '#E67E22', '#6E2C00'),
             6: ("FASE 6 — ESTADO ESTACIONARIO CONCEPTUAL",
-                "Operación electroquímica continua: Circuito externo activo, Doble Capa estable, Transferencia e⁻ y Difusión sostenidas")
+                "Operación electroquímica continua: Circuito externo activo, Doble Capa estable, Transferencia e⁻ y Difusión sostenidas",
+                '#EAFAF1', '#2ECC71', '#145A32')
         }
         
-        titulo_f, desc_f = textos_fase[fase]
+        titulo_f, desc_f, bg_color, border_color, text_color = estilos_fase[fase]
         
-        banner_bg = patches.Rectangle((0.5, 8.85), 13.0, 0.75, facecolor='#EAECEE', edgecolor='#B2BABB', linewidth=1.5, zorder=2)
+        # Banner de fase con color distintivo bien marcado
+        banner_bg = patches.Rectangle((0.5, 8.85), 13.0, 0.75, facecolor=bg_color, edgecolor=border_color, linewidth=2.2, zorder=2)
         ax.add_patch(banner_bg)
-        ax.text(7.0, 9.35, titulo_f, fontsize=11.5, weight='bold', color='#B03A2E' if fase >= 2 else '#2C3E50', ha='center', va='center', zorder=3)
-        ax.text(7.0, 9.05, desc_f, fontsize=9.5, color='#34495E', ha='center', va='center', zorder=3)
+        ax.text(7.0, 9.35, titulo_f, fontsize=12, weight='bold', color=text_color, ha='center', va='center', zorder=3)
+        ax.text(7.0, 9.05, desc_f, fontsize=9.5, color='#2C3E50', ha='center', va='center', zorder=3)
 
-        # 2. CIRCUITO Y GENERADOR (El generador queda JUSTO DEBAJO del banner a Y = 7.75 - 8.55)
+        # CIRCUITO Y GENERADOR
         self.dibujar_circuito(ax, fase, t, estado_gen)
 
-        # 3. TANQUE / BEAKER Y SOLUCIÓN (Y = 1.60 a 5.30)
+        # TANQUE / BEAKER Y SOLUCIÓN
         beaker_path = Path([(2.0, 5.3), (2.0, 1.6), (12.0, 1.6), (12.0, 5.3)])
         beaker_patch = patches.PathPatch(beaker_path, facecolor='#EBF5FB', edgecolor='#2980B9', linewidth=2.5, zorder=1)
         ax.add_patch(beaker_patch)
@@ -358,8 +373,7 @@ class ElectrochemicalCellSimulation:
         ax.plot([2.0, 12.0], [5.0, 5.0], color='#3498DB', linestyle='-', linewidth=2.0, alpha=0.7, zorder=2)
         ax.text(1.8, 5.0, "Solución\nElectrolítica", fontsize=8.5, color='#2980B9', ha='right', va='center')
 
-        # 4. ELECTRODOS (ÁNODO Y CÁTODO) (Y = 1.80 a 5.80)
-        # ÁNODO (Izquierda)
+        # ELECTRODOS (ÁNODO Y CÁTODO)
         rect_anode = patches.Rectangle((2.5, 1.8), 0.8, 4.0, facecolor='#95A5A6', edgecolor='#2C3E50', linewidth=2.0, zorder=3)
         ax.add_patch(rect_anode)
         ax.text(2.9, 3.8, "ÁNODO\n(Oxidación)", fontsize=9.5, weight='bold', color='white', ha='center', va='center', rotation=90, zorder=4)
@@ -367,7 +381,6 @@ class ElectrochemicalCellSimulation:
         signo_anode = "(+)" if activo else "(0)"
         ax.text(2.9, 5.5, signo_anode, fontsize=11.5, weight='bold', color='#C0392B' if activo else '#7F8C8D', ha='center', va='center', zorder=4)
 
-        # CÁTODO (Derecha)
         rect_cathode = patches.Rectangle((10.7, 1.8), 0.8, 4.0, facecolor='#7F8C8D', edgecolor='#2C3E50', linewidth=2.0, zorder=3)
         ax.add_patch(rect_cathode)
         ax.text(11.1, 3.8, "CÁTODO\n(Reducción)", fontsize=9.5, weight='bold', color='white', ha='center', va='center', rotation=90, zorder=4)
@@ -394,7 +407,7 @@ class ElectrochemicalCellSimulation:
             ax.text(4.6, 4.6, "Capa de Difusión\n(Ánodo)", fontsize=8, color='#D35400', ha='center', va='center', style='italic')
             ax.text(9.4, 4.6, "Capa de Difusión\n(Cátodo)", fontsize=8, color='#2980B9', ha='center', va='center', style='italic')
 
-        # 5. DIBUJO DE PARTÍCULAS EN LA SOLUCIÓN
+        # DIBUJO DE PARTÍCULAS EN LA SOLUCIÓN
         for p in self.particulas:
             px, py = p['x'], p['y']
             
@@ -422,13 +435,13 @@ class ElectrochemicalCellSimulation:
             ring = patches.Circle((flash['x'], flash['y']), 0.35, facecolor='none', edgecolor=flash['color'], linewidth=2.5, alpha=0.8, zorder=6)
             ax.add_patch(ring)
 
-        # 6. RECUADROS DE ECUACIONES DE ÁNODO Y CÁTODO (Ubicados a Y = 1.05)
+        # RECUADROS DE ECUACIONES DE ÁNODO Y CÁTODO
         ax.text(2.9, 1.05, "ÁNODO (OXIDACIÓN)\nB  →  A + e⁻", fontsize=9.5, weight='bold', color='#C0392B', ha='center', va='center',
                 bbox=dict(boxstyle="round,pad=0.35", facecolor='#FDEDEC', edgecolor='#C0392B', lw=1.5))
         ax.text(11.1, 1.05, "CÁTODO (REDUCCIÓN)\nA + e⁻  →  B", fontsize=9.5, weight='bold', color='#2980B9', ha='center', va='center',
                 bbox=dict(boxstyle="round,pad=0.35", facecolor='#EBF5FB', edgecolor='#2980B9', lw=1.5))
 
-        # 7. LEYENDA DE PARTÍCULAS (Ubicada a Y = 0.28, JUSTO DEBAJO de las cajas Ánodo/Cátodo, sin solapamiento)
+        # LEYENDA DE PARTÍCULAS
         legend_elements = [
             patches.Patch(facecolor='#FF7F0E', edgecolor='black', label='A: Especie Oxidada (Ox)'),
             patches.Patch(facecolor='#1F77B4', edgecolor='black', label='B: Especie Reducida (Red)'),
