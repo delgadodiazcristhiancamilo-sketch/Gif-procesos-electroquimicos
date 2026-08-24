@@ -2,7 +2,7 @@
 
 Este proyecto contiene el código en Python para generar un **GIF animado** y un **video MP4** educativamente rigurosos y visualmente claros que representan una **celda electroquímica completa** y, simultáneamente, los fenómenos físicoquímicos que ocurren en la **interfaz electrodo–electrolito**.
 
-![Celda Electroquímica](transferencia_electronica_doble_capa.gif)
+![Celda Electroquímica](transferencia_electronica_doble_capa.gif?v=2)
 
 ## 📌 Descripción General
 
@@ -22,16 +22,16 @@ La animación integra dos escalas espacio-temporales fundamentales:
 
 ---
 
-## ⏱️ Secuencia de Fases (13 Segundos)
+## ⏱️ Secuencia de Fases (20 Segundos)
 
-- **Fase 1 — Estado Inicial ($0 - 2.0\text{ s}$)**: Generador apagado (`OFF`), distribución homogénea de especies $A$ y $B$, iones aleatorios, sin doble capa ni flujo de $e^-$.
-- **Fase 2 — Aplicación de Potencial $\Delta E$ ($2.0 - 3.5\text{ s}$)**: Se activa la fuente, se establece el campo eléctrico y comienza el desplazamiento continuo de electrones $e^-$ por el conductor externo.
-- **Fase 3 — Formación de la Doble Capa Eléctrica ($3.5 - 5.0\text{ s}$)**: Migración iónica: Aniones $X^- \rightarrow \text{Ánodo (+)}$ y Cationes $M^+ \rightarrow \text{Cátodo (-)}$, constituyendo la estructura de apantallamiento interfacial (EDL).
-- **Fase 4 — Transferencia Electrónica Interfacial ($5.0 - 8.0\text{ s}$)**:
+- **Fase 1 — Estado Inicial ($0 - 3.0\text{ s}$)**: Generador apagado (`OFF`), distribución homogénea de especies $A$ y $B$, iones aleatorios, sin doble capa ni flujo de $e^-$.
+- **Fase 2 — Aplicación de Potencial $\Delta E$ ($3.0 - 6.0\text{ s}$)**: Se activa la fuente, se establece el campo eléctrico y comienza el desplazamiento continuo de electrones $e^-$ por el conductor externo.
+- **Fase 3 — Formación de la Doble Capa Eléctrica ($6.0 - 9.0\text{ s}$)**: Migración iónica: Aniones $X^- \rightarrow \text{Ánodo (+)}$ y Cationes $M^+ \rightarrow \text{Cátodo (-)}$, constituyendo la estructura de apantallamiento interfacial (EDL).
+- **Fase 4 — Transferencia Electrónica Interfacial ($9.0 - 13.0\text{ s}$)**:
   - **Ánodo**: $B \rightarrow A + e^-$ (Oxidación)
   - **Cátodo**: $A + e^- \rightarrow B$ (Reducción)
-- **Fase 5 — Gradientes de Concentración y Difusión ($8.0 - 11.0\text{ s}$)**: Consumo/generación local de especies produce gradientes $\nabla C$, induciendo transporte por difusión desde y hacia el seno de la solución.
-- **Fase 6 — Estado Estacionario Conceptual ($11.0 - 13.0\text{ s}$)**: Operación electroquímica continua con ciclo fluido para repetición en bucle del GIF.
+- **Fase 5 — Gradientes de Concentración y Difusión ($13.0 - 17.0\text{ s}$)**: Consumo/generación local de especies produce gradientes $\nabla C$, induciendo transporte por difusión desde y hacia el seno de la solución.
+- **Fase 6 — Estado Estacionario Conceptual ($17.0 - 20.0\text{ s}$)**: Operación electroquímica continua con ciclo fluido para repetición en bucle del GIF.
 
 ---
 
